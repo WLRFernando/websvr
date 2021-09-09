@@ -1,2 +1,2 @@
-[web]
+[webservers]
 54.179.152.172  ansible_ssh__user=ec2-user
