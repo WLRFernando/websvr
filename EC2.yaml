@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 
+  Sample template to provision an EC2 Instance with public IP. Create a Security Group and associate with this EC2.
+  You will be billed for the AWS resources used if you create a stack from this template.
+  After deleting stack, remember to delete the associated S3 bucket.
+
+Parameters:
+
+  KeyPairName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: 'AWS::EC2::KeyPair::KeyName' 
+    Default: websvr
+
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t2.micro
+
+  InstanceImageId:
+    Description: EC2 Image Id from this region
+    Type: AWS::EC2::Image::Id
+    Default: ami-082105f875acab993 # defaults for amazon linux for free tier
+
+Resources:
+
+  # EC2 instance which will have access for http and ssh
+  WebsvrEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyPairName
+      ImageId: !Ref InstanceImageId
+      NetworkInterfaces:
+        - GroupSet:
+            - !ImportValue 
+              'Fn::Sub': 'websvr-websvrSG'
+          AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          DeleteOnTermination: 'true'
+          SubnetId: !ImportValue 
+            'Fn::Sub': 'websvr-PublicSubnet1'
+      Tags: 
+       - Key: Name
+         Value: Websvr-EC2
+
+# output important values for easy viewing in cloudformation dashboard
+Outputs:
+  InstanceId:
+    Description: InstanceId of the first EC2 instance
+    Value: !Ref WebsvrEC2Instance
+    Export:
+      Name: !Sub "${AWS::StackName}"
+
+  PublicDNS:
+    Description: Public DNS Name of the EC2 instance
+    Value: !GetAtt 
+      - WebsvrEC2Instance
+      - PublicDnsName
+
+  PublicIP:
+    Description: Public IP address of the EC2 instance
+    Value: !GetAtt 
+      - WebsvrEC2Instance
+      - PublicIp
