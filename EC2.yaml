@@ -53,8 +53,8 @@ Resources:
           ToPort: 80
           CidrIp: 0.0.0.0/0 
       Tags: 
-        - Key: Name
-         Value: !Sub websvr ALB         
+       - Key: Name
+         Value: websvr ALB         
 
   EC2TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
