@@ -35,8 +35,9 @@ Resources:
           AssociatePublicIpAddress: 'true'
           DeviceIndex: '0'
           DeleteOnTermination: 'true'
-          SubnetId: !ImportValue 
-            'Fn::Sub': 'websvr-PublicSubnet1'
+          SubnetId: 
+            - !ImportValue 
+              'Fn::Sub': 'websvr-PublicSubnet1'
       Tags: 
        - Key: Name
          Value: Websvr-EC2
@@ -98,9 +99,9 @@ Resources:
       Scheme: internet-facing # or internal
       Subnets:
         - Fn::ImportValue:
-            !Sub "${websvr-PublicSubnet1}"
+            !Sub 'websvr-PublicSubnet1'
       SecurityGroups:
-      - Ref: ELBSecurityGroup               
+      - Ref: ALBSecurityGroup               
 
 # output important values for easy viewing in cloudformation dashboard
 Outputs:
