@@ -60,4 +60,4 @@ workflows:
           context: aws
           filters:
             branches:
-              only: circleci-project-setup
+              only: webcicd
