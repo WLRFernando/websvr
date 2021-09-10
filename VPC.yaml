@@ -128,15 +128,6 @@ Resources:
        - Key: Name
          Value: !Sub ${EnvironmentName} SG
 
-  SGBaseIngress:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref websvrSG
-      IpProtocol: '-1'
-      FromPort: '-1'
-      ToPort: '-1'
-      SourceSecurityGroupId: !Ref websvrSG
-
 Outputs:
   VPC:
     Description: A reference to the created VPC
@@ -157,7 +148,7 @@ Outputs:
       Name: !Sub "${AWS::StackName}-PrivateSubnet1"
 
   websvrSG:
-    Description: Security group with no ingress rule
+    Description: Security group for webserver
     Value: !Ref websvrSG
     Export:
       Name: !Sub "${AWS::StackName}-websvrSG"
