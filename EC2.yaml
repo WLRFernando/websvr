@@ -35,9 +35,8 @@ Resources:
           AssociatePublicIpAddress: 'true'
           DeviceIndex: '0'
           DeleteOnTermination: 'true'
-          SubnetId: 
-            - !ImportValue 
-              'Fn::Sub': 'websvr-PublicSubnet1'
+          SubnetId: !ImportValue 
+            'Fn::Sub': 'websvr-PublicSubnet1'
       Tags: 
        - Key: Name
          Value: Websvr-EC2
