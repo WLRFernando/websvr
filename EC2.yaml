@@ -96,6 +96,8 @@ Resources:
       Subnets:
         - Fn::ImportValue:
             !Sub 'websvr-PublicSubnet1'
+        - Fn::ImportValue:
+            !Sub 'websvr-PrivateSubnet1'    
       SecurityGroups:
       - Ref: ALBSecurityGroup               
 
