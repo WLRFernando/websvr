@@ -25,5 +25,5 @@ function deploy() {
 
 deploy VPC.yaml websvr EnvironmentName="${EnvironmentName}" --no-fail-on-empty-changeset
 
-deploy EC2.yaml websvrEC2 --no-fail-on-empty-changeset
+deploy EC2.yaml websvrEC2 KeyPairName="websvr" --no-fail-on-empty-changeset
 
