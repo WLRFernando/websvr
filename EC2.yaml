@@ -73,7 +73,7 @@ Resources:
          Value: '20'
       Targets:
        - Id: !Ref WebsvrEC2Instance
-        Port: 80
+         Port: 80
       UnhealthyThresholdCount: 3
       VpcId: !ImportValue websvr-VPC
       Tags:
