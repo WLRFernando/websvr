@@ -51,10 +51,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0 
-      Tags: 
-       - Key: Name
-         Value: websvr ALB         
+          CidrIp: 0.0.0.0/0         
 
   EC2TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
