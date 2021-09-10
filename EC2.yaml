@@ -1,9 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: 
   Sample template to provision an EC2 Instance with public IP. Create a Security Group and associate with this EC2.
-  You will be billed for the AWS resources used if you create a stack from this template.
-  After deleting stack, remember to delete the associated S3 bucket.
-
+  
 Parameters:
 
   KeyPairName:
@@ -43,6 +41,67 @@ Resources:
        - Key: Name
          Value: Websvr-EC2
 
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      # Should allow access from the local VPC as well as office Internet gateways
+      GroupDescription: ALB security group
+      VpcId: !ImportValue websvr-VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0 
+      Tags: 
+        - Key: Name
+         Value: !Sub websvr ALB         
+
+  EC2TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 15
+      HealthyThresholdCount: 5
+      Matcher:
+        HttpCode: '200'
+      Name: EC2TargetGroup
+      Port: 80
+      Protocol: HTTP
+      TargetGroupAttributes:
+       - Key: deregistration_delay.timeout_seconds
+         Value: '20'
+      Targets:
+       - Id: !Ref WebsvrEC2Instance
+        Port: 80
+      UnhealthyThresholdCount: 3
+      VpcId: !ImportValue websvr-VPC
+      Tags:
+       - Key: Name
+         Value: EC2TargetGroup
+       - Key: Port
+         Value: 80 
+
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref EC2TargetGroup
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internet-facing # or internal
+      Subnets:
+        - Fn::ImportValue:
+            !Sub "${websvr-PublicSubnet1}"
+      SecurityGroups:
+      - Ref: ELBSecurityGroup               
+
 # output important values for easy viewing in cloudformation dashboard
 Outputs:
   InstanceId:
@@ -62,3 +121,8 @@ Outputs:
     Value: !GetAtt 
       - WebsvrEC2Instance
       - PublicIp
+
+  ALBHostName:
+    Description: 'Application Load Balancer Hostname'
+    Value:
+      !GetAtt ApplicationLoadBalancer.DNSName      
